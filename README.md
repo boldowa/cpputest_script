@@ -22,6 +22,14 @@ Use it in project directory.
 
 `NewPackage <PackageName>`
 
+### gitinit.sh
+
+This script does the following...
+
+- git init
+- add cpputest submodule
+- build test
+
 
 ## NewClass
 
