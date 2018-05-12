@@ -1,0 +1,137 @@
+#!/bin/sh
+ScriptDir=`dirname $0`
+source ${ScriptDir}/components/vars.sh
+
+if test -z "$1" -o -z "$2"; then
+	echo "Usage: $0 <FunctionName> <PackageName> (SourceNameWithoutExtension)"
+	exit 0
+fi
+
+FunctionName=$1
+PackageName=$2
+SourceName=$3
+if test -z "$3"; then
+	SourceName=$1
+fi
+UpperSourceName=`echo "${SourceName}" | tr '[:lower:]' '[:upper:]'`
+
+ReplaceIdentifier="/*--- (!)CAUTION(!) Don't edit this comment! ---*/"
+
+
+if test    ! -d "src/${PackageName}" \
+	-o ! -d "test/${PackageName}" \
+	-o ! -d "include/${PackageName}"; then
+	echo "Package \"${PackageName}\" directory is missing..."
+	exit 1
+fi
+
+#--- Sources exists check
+# C++
+Source="${SourceName}.c"
+SourceFound=1
+test -e src/${PackageName}/${SourceName}.cpp
+CPPSourceExists=$?
+if test ${CPPSourceExists} -eq 0; then
+	Source="${SourceName}.cpp"
+	SourceFound=0
+fi
+
+# C
+test -e src/${PackageName}/${SourceName}.c
+CSourceExists=$?
+if test ${CSourceExists} -eq 0; then
+	Source="${SourceName}.c"
+	SourceFound=0
+fi
+
+#--- Header and Test exists check
+test -e include/${PackageName}/${SourceName}.h
+HeaderFound=$?
+test -e test/${PackageName}/${SourceName}.cpp
+TestFound=$?
+
+CopyTemplate() {
+	if test -e "${TemplateDir}/Function/$1"; then
+		cp "${TemplateDir}/Function/$1" "$2/${PackageName}/$3"
+		echo "Renaming function $2/${PackageName}/$3"
+		sed -i -e "s/FunctionName/${FunctionName}/g" \
+		       -e "s/Function/${SourceName}/g" \
+		       -e "s/FUNCTION/${UpperSourceName}/g" \
+		       -e "s/PackageName/${PackageName}/g" \
+		       "$2/${PackageName}/$3"
+	fi
+}
+
+if   test    0 -ne ${SourceFound}\
+          -a 0 -ne ${HeaderFound}\
+          -a 0 -ne ${TestFound}; then
+	echo "-- Copy template."
+	CopyTemplate Function.c src ${SourceName}.c
+	CopyTemplate Function.h include ${SourceName}.h
+	CopyTemplate FunctionTest.cpp test ${SourceName}.cpp
+elif test    0 -ne ${SourceFound}\
+          -o 0 -ne ${HeaderFound}\
+          -o 0 -ne ${TestFound}; then
+	echo "Error: contradictory..."
+	exit 1
+fi
+
+
+# Insert template
+Rep=`echo "${ReplaceIdentifier}" | sed -e 's/\*/\\\*/g' -e 's/\//\\\\\//g'`
+
+InsertTemplate(){
+	if test -e "$1/${PackageName}/$2"; then
+		echo "Inserting \"${FunctionName}\" function template into \"$1/${PackageName}/$2\"..."
+		Insert=`echo "$3" | \
+			sed -e 's/\*/\\\*/g' -e 's/\//\\\\\//g' \
+			    -e "s/FunctionName/${FunctionName}/g" \
+			    -e "s/Function/${SourceName}/g" \
+			    -e "s/FUNCTION/${UpperSourceName}/g" \
+			    -e "s/PackageName/${PackageName}/g"`
+
+		Insert=`echo "${Insert}" | sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\\\n/g'`
+
+		sed -i -e "s/${Rep}/${Insert}/" \
+			$1/${PackageName}/$2
+	fi
+}
+
+
+SourceTemplate=`cat << EOL
+/**
+ * @brief TODO: Write summary.
+ */
+void FunctionName(void)
+{
+}
+
+
+${ReplaceIdentifier}
+EOL`
+
+HeaderTemplate=`cat << EOL
+void FunctionName(void);
+
+${ReplaceIdentifier}
+EOL`
+
+TestTemplate=`cat << EOL
+/**
+ * Check FunctionName
+ */
+TEST(FunctionTest, FunctionName)
+{
+	/* TODO: Write test code. */
+}
+
+
+${ReplaceIdentifier}
+EOL`
+
+InsertTemplate src ${Source} "${SourceTemplate}"
+InsertTemplate include ${SourceName}.h "${HeaderTemplate}"
+InsertTemplate test ${SourceName}.cpp "${TestTemplate}"
+
+echo "Done."
+cd ${OriginDir}

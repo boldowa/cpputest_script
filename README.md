@@ -48,3 +48,16 @@ Generate C class template files.
 
 `NewCClass <ClassName> <PackageName>`
 
+
+## NewFunction
+
+Generate Function template.
+
+### Usage
+
+`NewFunction <FunctionName> <PackageName> (SourceName)`
+
+If you don't specify a **SourceName**, generate it will the same file name as the **FunctionName**.
+
+If the file already exists, it adds function to the file.
+
