@@ -68,7 +68,7 @@ if   test    0 -ne ${SourceFound}\
 	echo "-- Copy template."
 	CopyTemplate Function.c src ${SourceName}.c
 	CopyTemplate Function.h include ${SourceName}.h
-	CopyTemplate FunctionTest.cpp test ${SourceName}.cpp
+	CopyTemplate FunctionTest.cpp test ${SourceName}Test.cpp
 elif test    0 -ne ${SourceFound}\
           -o 0 -ne ${HeaderFound}\
           -o 0 -ne ${TestFound}; then
