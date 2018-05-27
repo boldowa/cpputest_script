@@ -47,7 +47,7 @@ fi
 #--- Header and Test exists check
 test -e include/${PackageName}/${SourceName}.h
 HeaderFound=$?
-test -e test/${PackageName}/${SourceName}.cpp
+test -e test/${PackageName}/${SourceName}Test.cpp
 TestFound=$?
 
 CopyTemplate() {
@@ -120,7 +120,7 @@ TestTemplate=`cat << EOL
 /**
  * Check FunctionName
  */
-TEST(FunctionTest, FunctionName)
+TEST(Function, FunctionName)
 {
 	/* TODO: Write test code. */
 }
@@ -131,7 +131,7 @@ EOL`
 
 InsertTemplate src ${Source} "${SourceTemplate}"
 InsertTemplate include ${SourceName}.h "${HeaderTemplate}"
-InsertTemplate test ${SourceName}.cpp "${TestTemplate}"
+InsertTemplate test ${SourceName}Test.cpp "${TestTemplate}"
 
 echo "Done."
 cd ${OriginDir}

@@ -28,12 +28,14 @@ struct _ClassName {
 /**
  * Constructor
  */
-ClassName* new_ClassName(void);
+ClassName* new_ClassName_impl(void);
+#define new_ClassName(a) new_ClassName_impl(a)
 
 /**
  * Destractor
  */
-void delete_ClassName(ClassName**);
+void delete_ClassName_impl(ClassName**);
+#define delete_ClassName(a) delete_ClassName_impl(a)
 
 
 #ifdef __cplusplus

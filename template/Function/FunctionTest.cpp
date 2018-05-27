@@ -2,10 +2,9 @@
  * @file FunctionTest.cpp
  */
 #include <CppUTest/TestHarness.h>
-/*#include "common/types.h"*/
 #include "PackageName/Function.h"
 
-TEST_GROUP(FunctionTest)
+TEST_GROUP(Function)
 {
 	virtual void setup()
 	{

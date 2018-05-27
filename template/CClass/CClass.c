@@ -1,7 +1,6 @@
 /**
  * @file ClassName.c
  */
-/*#include "common/types.h"*/
 #include <assert.h>
 #include <stdlib.h>
 #include "PackageName/CClass.h"
@@ -27,16 +26,16 @@ struct _ClassName_private {
  *
  * @return the pointer of object
  */
-ClassName* new_ClassName(void)
+ClassName* new_ClassName_impl(void)
 {
 	ClassName* self;
 	ClassName_protected* pro;
 	ClassName_private* pri;
 
 	/* make objects */
-	self = malloc(sizeof(ClassName));
-	pro = malloc(sizeof(ClassName_protected));
-	pri = malloc(sizeof(ClassName_private));
+	self = calloc(1, sizeof(ClassName));
+	pro = calloc(1, sizeof(ClassName_protected));
+	pri = calloc(1, sizeof(ClassName_private));
 
 	/* check whether object creatin succeeded */
 	assert(pro);
@@ -81,7 +80,7 @@ void delete_ClassName_members(ClassName* self)
  *
  * @param the pointer of object
  */
-void delete_ClassName(ClassName** self)
+void delete_ClassName_impl(ClassName** self)
 {
 	/* This is the template that default destractor. */
 	assert(self);

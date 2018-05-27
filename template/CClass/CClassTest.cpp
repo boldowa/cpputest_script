@@ -2,10 +2,9 @@
  * @file ClassNameTest.cpp
  */
 #include <CppUTest/TestHarness.h>
-/*#include "common/types.h"*/
 #include "PackageName/CClass.h"
 
-TEST_GROUP(ClassNameTest)
+TEST_GROUP(ClassName)
 {
 	ClassName* target;
 	virtual void setup()
@@ -23,7 +22,7 @@ TEST_GROUP(ClassNameTest)
 /**
  * Check object create
  */
-TEST(ClassNameTest, new)
+TEST(ClassName, new)
 {
 	CHECK(NULL != target);
 }
@@ -31,7 +30,7 @@ TEST(ClassNameTest, new)
 /**
  * Check object delete
  */
-TEST(ClassNameTest, delete)
+TEST(ClassName, delete)
 {
 	delete_ClassName(&target);
 
